@@ -1,137 +1,44 @@
-import { StyleSheet, View, Text, SafeAreaView, Button, Platform, StatusBar, ImageBackground, TouchableOpacity } from "react-native";
-import { useState, useEffect, useCallback } from 'react'
+import { StyleSheet, View, Text, SafeAreaView, Button, Platform, StatusBar, ImageBackground, TouchableOpacity, Image } from "react-native";
 import Entypo from '@expo/vector-icons/Entypo';
-import * as SplashScreen from 'expo-splash-screen';
-import * as Font from 'expo-font';
-import { Pacifico_400Regular } from '@expo-google-fonts/pacifico'
-import { Raleway_800ExtraBold } from "@expo-google-fonts/raleway";
-import { Raleway_900Black } from "@expo-google-fonts/raleway";
-
+import { Theme } from "../Components/Theme";
 export function FirstScreen() {
-
-    const [count, setCount] = useState(0);
-    const [appIsReady, setAppIsReady] = useState(false);
-
-    useEffect(() => {
-        async function prepare() {
-          try {
-            await Font.loadAsync({ Pacifico_400Regular });
-            await Font.loadAsync({ Raleway_800ExtraBold });
-            await Font.loadAsync({ Raleway_900Black })
-            await new Promise(resolve => setTimeout(resolve, 2000));
-          } catch (e) {
-            console.warn(e);
-          } finally {
-            setAppIsReady(true);
-          }
-        }
-    
-        prepare();
-      }, []);
-
-      useCallback(async () => {
-        if (appIsReady) {
-          await SplashScreen.hideAsync();
-        }
-      }, [appIsReady]);
-    
-      if (!appIsReady) {
-        return null;
-      }
-    
     return (
-        // <ImageBackground style={{flex: 1}} source={{url: 'https://images.pexels.com/photos/4303031/pexels-photo-4303031.jpeg?auto=compress&cs=tinysrgb&w=600'}}>
-    <ImageBackground style={styles.container}source={{url: 'https://images.pexels.com/photos/6347900/pexels-photo-6347900.jpeg?auto=compress&cs=tinysrgb&w=600'}}>
-        <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{flex: 1}}>
         <View style={styles.container}>
-            <View>
-              <View style={styles.headerArrangment}>
-            <Text style={styles.headerOne}>Job</Text>
-            <Text style={styles.headerOneHalf}>Plug</Text>
-              </View>
-            <Text style={styles.headerTwo}> The worlds #1 Job search App </Text>
-            <View style={styles.btnContainer}>
-            <TouchableOpacity style={styles.SignUpButton}>
-              <Text style={styles.btnText}> Sign Up </Text>
-            </TouchableOpacity>
-            </View>
-            <View style={styles.btnContainer}>
-            <TouchableOpacity style={styles.CreateAcctButton}>
-              <Text style={styles.btnText}> Create an account </Text>
-            </TouchableOpacity>
-            </View >
-            <Text style={styles.buttomText}>By Using JobPLug, you agree and consent to our: Terms of Service-Cookie-Policy-privacy Policy</Text>
-            </View>
+          <Image source={require("../../assets/applogo.png")} style={{width: 100, height: 100}} />
+          <View>
+          <Image source={require("../../assets/Interview.png")} style={{width: '100%', height: 250, marginTop: 70}} />
+          <Text style={{fontFamily: Theme.fonts.text200, color: 'black', fontSize: 30}}>Welcome to JobPlug, Choose a job you love, and you will never have to work a day in your life. </Text>
+          </View>
+          <View>
+          <TouchableOpacity style={styles.appBTN}>
+            <Text style={{ fontSize: 16, color: 'white', fontFamily: Theme.fonts.text200}}>Get Started</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.appBTN, { backgroundColor: 'white' }]}>
+            <Text style={{fontSize: 16, color: Theme.colors.blueMedium, fontFamily: Theme.fonts.text200}}>Sign In</Text>
+          </TouchableOpacity>
+          </View>
         </View>
-    </SafeAreaView>
-  </ImageBackground>
-)
+      </SafeAreaView>
+    )    
 }
 
 const styles = StyleSheet.create({
     container:{
         flex: 1,
         margin: Platform.OS == 'android' ? StatusBar.currentHeight : null,
-        padding: 5,
+        padding: 20,
+        justifyContent: 'space-between'
     },
-    headerOne:{
-      fontSize: 70, 
-      textAlign: 'left', 
-      fontFamily: 'Pacifico_400Regular',
-      color: 'blue',
-    },
-    headerOneHalf:{
-      fontSize: 70, 
-      textAlign: 'left', 
-      fontFamily: 'Pacifico_400Regular',
-      color: 'red'
-    },
-    headerArrangment:{
-      flexDirection: 'row',
-      justifyContent: 'flex-start'
-    },
-    headerTwo:{
-      fontFamily: 'Raleway_900Black',
-      fontSize: 30,
-      marginTop: 350,
-      marginBottom: 50
-    },
-    SignUpButton:{
-      borderWidth: 2,
-      height: 42, width: '70%',
-      justifyContent: 'center', 
+    appBTN:{
+      borderWidth: 1,
+      borderColor: Theme.colors.blueMedium,
+      padding: 10,
+      marginVertical: 5,
       alignItems: 'center',
-      marginTop: 10,
-      borderRadius: 5,
-    },
-    CreateAcctButton:{
-      borderWidth: 2,
-      height: 42, 
-      width: '70%',
-      justifyContent: 'center', 
-      alignItems: 'center',
-      borderRadius: 5,
-      
-    },
-    buttomText: {
-      textAlign: 'center',
-      color: 'white',
-      marginTop: 30,
-      fontFamily: 'Raleway_600SemiBold'
-    },
-    btnContainer:{
-      width: '130%',
-      justifyContent: 'center',
-      alignSelf: 'center', 
-      alignContent: 'center', 
-      alignItems: 'center',
-      marginTop: 10,
-    },
-    btnText:{
-      fontFamily: 'Raleway_800ExtraBold',
-      
-    }
-    
+      borderRadius: 40,
+      backgroundColor: Theme.colors.blueMedium,
 
+    }
 
 })
