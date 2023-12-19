@@ -1,17 +1,18 @@
 import { StyleSheet, View, Text, SafeAreaView, Button, Platform, StatusBar, ImageBackground, TouchableOpacity, Image } from "react-native";
 import Entypo from '@expo/vector-icons/Entypo';
 import { Theme } from "../Components/Theme";
-export function FirstScreen() {
+export function FirstScreen({navigation}) {
     return (
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
         <View style={styles.container}>
           <Image source={require("../../assets/applogo.png")} style={{width: 100, height: 100}} />
           <View>
           <Image source={require("../../assets/Interview.png")} style={{width: '100%', height: 250, marginTop: 70}} />
-          <Text style={{fontFamily: Theme.fonts.text200, color: 'black', fontSize: 30}}>Welcome to JobPlug, Choose a job you love, and you will never have to work a day in your life. </Text>
+          <Text style={{fontFamily: Theme.fonts.text200, color: 'black', fontSize: 30}}>Welcome to JobPlug, Choose a job
+           you love, and you will never have to work a day in your life. </Text>
           </View>
           <View>
-          <TouchableOpacity style={styles.appBTN}>
+          <TouchableOpacity style={styles.appBTN} onPress={()=> navigation.navigate("HomePage")}>
             <Text style={{ fontSize: 16, color: 'white', fontFamily: Theme.fonts.text200}}>Get Started</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.appBTN, { backgroundColor: 'white' }]}>
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
         flex: 1,
         margin: Platform.OS == 'android' ? StatusBar.currentHeight : null,
         padding: 20,
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     appBTN:{
       borderWidth: 1,
@@ -38,7 +39,6 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       borderRadius: 40,
       backgroundColor: Theme.colors.blueMedium,
-
     }
 
 })

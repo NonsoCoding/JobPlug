@@ -7,6 +7,8 @@ import { Pacifico_400Regular } from '@expo-google-fonts/pacifico';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { HomePage } from './FrameWork/Screens/HomePage';
+import { StackNavigation } from './FrameWork/Navigators/StackNavigator';
+import { Profile } from './FrameWork/Screens/Profile';
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -47,7 +49,7 @@ export default function App() {
     
   return (
     <View style={{flex: 1}}>
-      <HomePage />
+      <StackNavigation />
     </View>
   );
 }
