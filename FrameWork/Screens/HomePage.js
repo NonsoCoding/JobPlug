@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Dimensions,
 } from "react-native";
 
 import { Avatar, Searchbar } from "react-native-paper";
@@ -19,6 +20,17 @@ import { Theme } from "../Components/Theme";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FirstScreen } from "./Intro";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Carousel from "react-native-reanimated-carousel";
+import { Profile } from "./Profile";
+
+
+const CarouselLinks = [
+"https://images.pexels.com/photos/5439381/pexels-photo-5439381.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+'https://images.pexels.com/photos/5439436/pexels-photo-5439436.jpeg?auto=compress&cs=tinysrgb&w=600',
+'https://images.pexels.com/photos/5668859/pexels-photo-5668859.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+
+]
+const screenwidth = Dimensions.get('screen').width;
 
 function Home({navigation}) {
   return (
@@ -44,11 +56,37 @@ function Home({navigation}) {
                 />
               </View>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=> navigation.navigate("Notifications")}>
               <Ionicons name="notifications" size="30" />
             </TouchableOpacity>
           </View>
-          <View></View>
+
+          <View style={{ flex: 1 }}>
+            <Carousel
+                loop
+                width={screenwidth}
+                height={250}
+                autoPlay={true}
+                data={CarouselLinks}
+                scrollAnimationDuration={2000}
+                // onSnapToItem={(index) => console.log('current index:', index)}
+                renderItem={({ index }) => (
+                    <View
+                        style={{
+                            margin: 1
+                        }}
+                    >
+                        <Image style={{
+                          width: '100%',
+                          height: 250,
+                          borderRadius: 10,
+                        }}
+                        source={{uri: CarouselLinks[index]}}
+                        />
+                    </View>
+                )}
+            />
+        </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -67,7 +105,7 @@ export function HomePage() {
           if (route.name === "Home") {
             size = focused ? 35 : 23;
             iconName = focused ? "home" : "home-outline";
-          } else if (route.name === "Intro") {
+          } else if (route.name === "Profile") {
             size = focused ? 35 : 23;
             iconName = focused ? "account" : "account-outline";
           }
@@ -81,7 +119,8 @@ export function HomePage() {
       })}
     >
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Intro" component={FirstScreen} />
+      <Tab.Screen name="Profile" component={Profile} />
+      {/* <Tab.Screen name="Intro" component={FirstScreen} /> */}
     </Tab.Navigator>
   );
 }

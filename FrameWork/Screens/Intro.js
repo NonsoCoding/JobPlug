@@ -12,10 +12,10 @@ export function FirstScreen({navigation}) {
            you love, and you will never have to work a day in your life. </Text>
           </View>
           <View>
-          <TouchableOpacity style={styles.appBTN} onPress={()=> navigation.navigate("HomePage")}>
+          <TouchableOpacity style={styles.appBTN} onPress={()=> navigation.navigate("SignUp")}>
             <Text style={{ fontSize: 16, color: 'white', fontFamily: Theme.fonts.text200}}>Get Started</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.appBTN, { backgroundColor: 'white' }]}>
+          <TouchableOpacity style={[styles.appBTN, { backgroundColor: 'white' }]} onPress={()=> navigation.navigate("SignIn")}>
             <Text style={{fontSize: 16, color: Theme.colors.blueMedium, fontFamily: Theme.fonts.text200}}>Sign In</Text>
           </TouchableOpacity>
           </View>
