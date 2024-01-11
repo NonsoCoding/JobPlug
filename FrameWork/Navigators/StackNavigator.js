@@ -14,6 +14,7 @@ import { SignIn } from "../Screens/SignIn";
 import { ResetPassword } from "../Screens/ResetPassowrd";
 import { Mode } from "../Screens/Mode";
 import { Notifications } from "../Screens/Notifications";
+import { ProceedSignUp } from "../Screens/ProceedSignUp";
 
 
 const Stack = createNativeStackNavigator();
@@ -36,6 +37,7 @@ export function StackNavigation() {
         <Stack.Screen name="Reset password" component={ResetPassword} />
         <Stack.Screen name="Mode" component={Mode} />
         <Stack.Screen name="Notifications" component={Notifications} />
+        <Stack.Screen name="ProceedSignUp" component={ProceedSignUp} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -9,6 +9,7 @@ import * as Font from 'expo-font';
 import { HomePage } from './FrameWork/Screens/HomePage';
 import { StackNavigation } from './FrameWork/Navigators/StackNavigator';
 import { Profile } from './FrameWork/Screens/Profile';
+import { AppProvider } from './FrameWork/Screens/globalVariable';
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -49,7 +50,9 @@ export default function App() {
     
   return (
     <View style={{flex: 1}}>
+      <AppProvider>
       <StackNavigation />
+      </AppProvider>
     </View>
   );
 }

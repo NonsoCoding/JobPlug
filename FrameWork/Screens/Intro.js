@@ -15,7 +15,7 @@ export function FirstScreen({navigation}) {
           <TouchableOpacity style={styles.appBTN} onPress={()=> navigation.navigate("SignUp")}>
             <Text style={{ fontSize: 16, color: 'white', fontFamily: Theme.fonts.text200}}>Get Started</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.appBTN, { backgroundColor: 'white' }]} onPress={()=> navigation.navigate("SignIn")}>
+          <TouchableOpacity style={[styles.appBTN, { backgroundColor: 'white' }]} onPress={()=> navigation.navigate("SignIn", {metaData:"Chukwunonso obi"})}>
             <Text style={{fontSize: 16, color: Theme.colors.blueMedium, fontFamily: Theme.fonts.text200}}>Sign In</Text>
           </TouchableOpacity>
           </View>

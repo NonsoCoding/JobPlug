@@ -1,57 +1,136 @@
-import { View, Text, StyleSheet, StatusBar, SafeAreaView, Platform, TouchableOpacity, TextInput, Touchable } from "react-native";
-import { Image } from "react-native";
-import { Theme } from "../Components/Theme";
-export function SignIn({ navigation }) {
+import { Alert, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useContext } from 'react'
+import { Theme } from '../Components/Theme'
+import { AppContext } from "./globalVariable";
+import { ErrorMessage, Formik } from 'formik'
+import * as yup from "yup"
+import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
+import { auth, authentication } from '../../Firebase/Settings'
+
+const validation = yup.object({
+    email: yup.string()
+        .required()
+        .email("Enter a valid email")
+        .min(5)
+        .max(30),
+    password: yup.string().required().min(8).max(20)
+})
+
+
+export function SignIn({ navigation, route }) {
+    // console.log(route.params.metaData)
+    const { email, setEmail } = useContext(AppContext)
+    // const [email, setEmail] = useState("")
+
     return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-        <View style={styles.container}>
-            {/* <Image source={require("../../assets/")}/> */}
-            <Text style={{fontSize: 50, fontWeight: '900', fontFamily: Theme.fonts.text900}}>Sign In</Text>
-            <Image source={require("../../assets/signinlogo.png")} style={{width: 400, height: 300, alignSelf: 'center'}}/>
-            <View>
-                <View style={styles.TextInput}>
-                <TextInput placeholder="Email/Phone"/>
-                </View>
-                <View style={styles.TextInput}>
-                <TextInput placeholder="Password"/>
-                </View>
-                <TouchableOpacity style={styles.btn} onPress={()=> navigation.navigate("HomePage")} >
-                    <Text style={{color: 'white', fontFamily: Theme.fonts.text200}}>Continue</Text>
+        <SafeAreaView style={{ flex: 1 }} >
+            <View style={styles.container}>
+                <Formik
+                    initialValues={{ email: "", password: "" }}
+                    onSubmit={(value) => {
+                        signInWithEmailAndPassword(authentication, value.email, value.password)
+                            .then(() => {
+                                onAuthStateChanged(authentication, (user) => {
+                                    console.log(user.uid);
+                                    navigation.navigate("HomePage")
+                                })
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                                Alert.alert(
+                                    "Message!",
+                                    "An error"
+                                    [{ text: "Try Again" }]
+                                )
+                            })
+                    }}
+                    validationSchema={validation}
+                >
+                    {(prop) => {
+                        return (
+                            <View style={styles.form}>
+                                <Text style={styles.header}>Login Your</Text>
+                                <Text style={[styles.header, { marginBottom: 20 }]}>Account!</Text>
+
+                                <Text style={styles.placeholder}>Email Address</Text>
+                                <TextInput
+                                    style={[styles.input, { marginBottom: 0 }]}
+                                    autoCapitalize="none"
+                                    onChangeText={prop.handleChange("email")}
+                                    onBlur={prop.handleBlur("email")}
+                                    value={prop.values.email}
+                                />
+                                <Text style={[styles.error, { display: prop.touched.email && prop.errors.email ? "flex" : "none" }]}>{prop.errors.email}</Text>
+
+                                <Text style={styles.placeholder}>Password</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    autoCapitalize="none"
+                                    secureTextEntry
+                                    onChangeText={prop.handleChange("password")}
+                                    onBlur={prop.handleBlur("password")}
+                                    value={prop.values.password}
+                                />
+                                <Text style={[styles.error, { display: prop.touched.password && prop.errors.password ? "flex" : "none" }]}>{prop.errors.password}</Text>
+
+                                <TouchableOpacity onPress={() => navigation.navigate("Reset password")} style={{ marginBottom: 10 }}>
+                                    <Text style={{ fontSize: 16, color: Theme.colors.primary, fontFamily: Theme.fonts.text600 }}>Forgot password?</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={prop.handleSubmit} style={styles.appBTN}>
+                                    <Text style={{ fontSize: 16, color: "white", fontFamily: Theme.fonts.text600 }}>Login</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )
+                    }}
+                </Formik>
+                <TouchableOpacity onPress={() => navigation.navigate("SignUp")} style={{ alignItems: "center", marginTop: 10 }}>
+                    <Text style={{ fontSize: 16, color: Theme.colors.primary, fontFamily: Theme.fonts.text600 }}>Don't have an account?</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=> navigation.navigate("Reset password")}>
-                <Text style={{paddingVertical: 10, fontFamily: Theme.fonts.text600}}>Forgotten password?</Text>
-                </TouchableOpacity>
-                <View style={{flexDirection: 'row'}}>
-                    <Text style={{fontFamily: Theme.fonts.text200}}>Don't have an account? </Text>
-                    <TouchableOpacity onPress={()=> navigation.navigate("SignUp")}>
-                        <Text style={{color: Theme.colors.blueMedium, fontFamily: Theme.fonts.text600}}> Click here</Text>
-                    </TouchableOpacity>
-                </View>
             </View>
-        </View>
-    </SafeAreaView>
+        </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        margin: Platform.OS == "android" ? StatusBar.currentHeight : null,
         padding: 20,
-        justifyContent: 'space-between'
+        backgroundColor: "white"
     },
-    TextInput: {
+    form: {
+        flex: 1,
+        justifyContent: "center",
+        // alignItems: "center"
+    },
+    header: {
+        fontSize: 35,
+        fontFamily: Theme.fonts.text700
+    },
+    input: {
+        borderColor: "gray",
         borderWidth: 1,
-        borderRadius: 5,
         padding: 15,
-        marginBottom: 20
+        marginBottom: 10,
+        borderRadius: 10,
+        width: "100%",
+        fontSize: 18
     },
-    btn : {
+    placeholder: {
+        fontFamily: Theme.fonts.text300,
+        marginTop: 10
+    },
+    error: {
+        fontFamily: Theme.fonts.text400,
+        color: "#d70000",
+        marginStart: 7
+    },
+    appBTN: {
         borderWidth: 1,
-        borderRadius: 15,
-        padding: 20,
+        borderColor: Theme.colors.primary,
+        padding: 10,
+        marginVertical: 5,
         alignItems: 'center',
-        backgroundColor: Theme.colors.blueMedium,
-        borderColor: Theme.colors.blueMedium,
+        borderRadius: 40,
+        backgroundColor: Theme.colors.primary
     }
 })
