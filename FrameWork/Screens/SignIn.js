@@ -6,6 +6,7 @@ import { ErrorMessage, Formik } from 'formik'
 import * as yup from "yup"
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
 import { auth, authentication } from '../../Firebase/Settings'
+import { Preloader } from '../Components/Preloader';
 
 const validation = yup.object({
     email: yup.string()
@@ -19,7 +20,7 @@ const validation = yup.object({
 
 export function SignIn({ navigation, route }) {
     // console.log(route.params.metaData)
-    const { email, setEmail } = useContext(AppContext)
+    const { setPreloader } = useContext(AppContext)
     // const [email, setEmail] = useState("")
 
     return (
@@ -28,14 +29,21 @@ export function SignIn({ navigation, route }) {
                 <Formik
                     initialValues={{ email: "", password: "" }}
                     onSubmit={(value) => {
+                        setPreloader(true)
                         signInWithEmailAndPassword(authentication, value.email, value.password)
                             .then(() => {
                                 onAuthStateChanged(authentication, (user) => {
+                                    setPreloader(false)
                                     console.log(user.uid);
+                                    Alert.alert(
+                                        "Logging In...",
+                                        "Logged in succesfully"
+                                    )
                                     navigation.navigate("HomePage")
                                 })
                             })
                             .catch((error) => {
+                                setPreloader(false)
                                 console.log(error);
                                 Alert.alert(
                                     "Message!",

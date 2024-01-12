@@ -7,15 +7,18 @@ import {
   Platform,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from "react-native";
 import { Image } from "react-native";
 import { Theme } from "../Components/Theme";
 import * as yup from "yup";
 import { Formik } from "formik";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AppContext } from "./globalVariable";
 import { createUserWithEmailAndPassword, onAuthStateChanged, signUpWithEmailAndPassword } from "firebase/auth";
-import { authentication } from "../../Firebase/Settings";
+import { authentication, db } from "../../Firebase/Settings";
+import { setDoc } from "firebase/firestore";
+import { useNavigation } from "@react-navigation/native";
 
 const validation = yup.object({
     email: yup.string().required().email().min(8).max(30),
@@ -23,29 +26,43 @@ const validation = yup.object({
 })
 
 export function SignUp({ navigation }) {
-    // const [email, setEmail] = useContext(AppContext)
+    const {setPreloader} = useContext(AppContext)
+    const SignUpnavigation = useNavigation();
+
+  useEffect(() => {
+    // Reset the form values when navigating to SignUp
+    return () => {
+      prop.resetForm();
+    };
+  }, [SignUpnavigation]);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <View style={styles.container}>
         <Formik
           initialValues={{ email: "", password: "" }}
-          onSubmit={(value) => {
-            createUserWithEmailAndPassword(authentication, value.email, value.password)
-            .then(()=> {
-              onAuthStateChanged(authentication, (user) => {
-                console.log(user.uid)
-                navigation.navigate("ProceedSignUp")
+          onSubmit={(values) => {
+            // First step: Create user account
+            setPreloader(true);
+            createUserWithEmailAndPassword(
+              authentication,
+              values.email,
+              values.password
+            )
+              .then((userCredential) => {
+                const user = userCredential.user;
+                const uid = user.uid;
+
+                // Second step: Navigate to the next screen for additional information
+                navigation.navigate("ProceedSignUp", { uid });
+                setPreloader(false);
               })
               .catch((error) => {
-                console.log(error);
-                Alert.alert(
-                    "Message!",
-                    "An error"
-                    [{ text: "Try Again" }]
-                )
-              })
-            })
+                setPreloader(false);
+                console.error(error);
+                Alert.alert("Error", "Sorry, This account already exists");
+              });
           }}
+       
           validationSchema={validation}
         >
           {(prop) => {
