@@ -15,6 +15,8 @@ import { ResetPassword } from "../Screens/ResetPassowrd";
 import { Mode } from "../Screens/Mode";
 import { Notifications } from "../Screens/Notifications";
 import { ProceedSignUp } from "../Screens/ProceedSignUp";
+import { SearchScreen } from "../Screens/SearchScreen";
+import { PostingScreen } from "../Screens/PostingScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -38,6 +40,8 @@ export function StackNavigation() {
         <Stack.Screen name="Mode" component={Mode} />
         <Stack.Screen name="Notifications" component={Notifications} />
         <Stack.Screen name="ProceedSignUp" component={ProceedSignUp} />
+        <Stack.Screen name="SearchScreen" component={SearchScreen} />
+        <Stack.Screen name="PostingScreen" component={PostingScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

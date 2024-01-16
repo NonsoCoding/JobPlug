@@ -14,7 +14,13 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import { Theme } from "../Components/Theme";
+import { useContext } from "react";
+import { AppContext } from "./globalVariable";
 export function Profile({ navigation }) {
+
+  const { userUID, setUserInfo, userInfo } = useContext(AppContext)
+
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -27,7 +33,7 @@ export function Profile({ navigation }) {
           </TouchableOpacity>
           <View style={{ alignItems: "center", marginVertical: 10 }}>
             <Text style={{ fontSize: 30, fontFamily: Theme.fonts.text500 }}>
-              Chukwunonso Obi
+              {userInfo.firstName} {userInfo.lastName}
             </Text>
             <TouchableOpacity style={styles.EditProfileBtn} onPress={()=> navigation.navigate("Edit Profile")}>
               <Text style={{ fontFamily: Theme.fonts.text500 }}>

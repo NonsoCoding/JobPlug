@@ -22,6 +22,11 @@ import { FirstScreen } from "./Intro";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Carousel from "react-native-reanimated-carousel";
 import { Profile } from "./Profile";
+import { useContext, useEffect } from "react";
+import { AppContext } from "./globalVariable";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../Firebase/Settings";
+import { PostingScreen } from "./PostingScreen";
 
 
 const CarouselLinks = [
@@ -33,6 +38,20 @@ const CarouselLinks = [
 const screenwidth = Dimensions.get('screen').width;
 
 function Home({navigation}) {
+
+  const { userUID, setUserInfo, userInfo} = useContext(AppContext)
+
+  async function getUserinfo() {
+    const userInfo = await getDoc(doc(db, "users", userUID))
+    setUserInfo(userInfo.data())
+    console.log(userInfo.data());
+  }
+  useEffect(() => {
+    console.log(userUID);
+    getUserinfo()
+  }, [])
+  
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView>
@@ -44,21 +63,24 @@ function Home({navigation}) {
                 source={require("../../assets/profile.png")}
               />
             </TouchableOpacity>
-            <View style={styles.SearchDesign}>
-              <View>
-                <EvilIcons name="search" size="25" color={"#999999"} />
-              </View>
-              <View>
-                <TextInput
-                  style={styles.SearchView}
-                  placeholder="Search"
-                  placeholderTextColor={"#999999"}
-                />
-              </View>
+            <View style={{alignItems: 'center', flexDirection: "column", }}>
+              <Text style={{fontFamily: Theme.fonts.text600, fontSize: 25, }}>
+                Welcome back
+              </Text>
+              <Text style={{fontFamily: Theme.fonts.text300, fontSize: 15, }}>
+                {userInfo.firstName} {userInfo.lastName}
+              </Text>
             </View>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View>
+                <TouchableOpacity onPress={()=> navigation.navigate("SearchScreen")}>
+                <EvilIcons name="search" size={35} color={"#999999"} />
+                </TouchableOpacity>
+              </View>
             <TouchableOpacity onPress={()=> navigation.navigate("Notifications")}>
               <Ionicons name="notifications" size="30" />
             </TouchableOpacity>
+            </View>
           </View>
 
           <View style={{ flex: 1 }}>
@@ -105,7 +127,12 @@ export function HomePage() {
           if (route.name === "Home") {
             size = focused ? 35 : 23;
             iconName = focused ? "home" : "home-outline";
-          } else if (route.name === "Profile") {
+          }
+          else if (route.name == "Post") {
+            size = focused ? 35 : 23;
+            iconName = focused ? "plus" : "plus-box-outline"
+          } 
+          else if (route.name === "Profile") {
             size = focused ? 35 : 23;
             iconName = focused ? "account" : "account-outline";
           }
@@ -119,8 +146,8 @@ export function HomePage() {
       })}
     >
       <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Post" component={PostingScreen} />
       <Tab.Screen name="Profile" component={Profile} />
-      {/* <Tab.Screen name="Intro" component={FirstScreen} /> */}
     </Tab.Navigator>
   );
 }
@@ -152,7 +179,7 @@ const styles = StyleSheet.create({
   SearchView: {
     alignSelf: "flex-start",
     alignItems: "flex-start",
-    width: 270,
+    width: 27,
     fontFamily: Theme.fonts.text400,
   },
 });

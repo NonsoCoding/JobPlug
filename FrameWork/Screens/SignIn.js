@@ -20,7 +20,7 @@ const validation = yup.object({
 
 export function SignIn({ navigation, route }) {
     // console.log(route.params.metaData)
-    const { setPreloader } = useContext(AppContext)
+    const { setPreloader, setUserUID } = useContext(AppContext)
     // const [email, setEmail] = useState("")
 
     return (
@@ -33,8 +33,9 @@ export function SignIn({ navigation, route }) {
                         signInWithEmailAndPassword(authentication, value.email, value.password)
                             .then(() => {
                                 onAuthStateChanged(authentication, (user) => {
+                                    setUserUID(user.uid)
                                     setPreloader(false)
-                                    console.log(user.uid);
+                                    // console.log(user.uid);
                                     Alert.alert(
                                         "Logging In...",
                                         "Logged in succesfully"

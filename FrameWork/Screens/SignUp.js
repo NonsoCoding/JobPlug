@@ -26,11 +26,10 @@ const validation = yup.object({
 })
 
 export function SignUp({ navigation }) {
-    const {setPreloader} = useContext(AppContext)
+    const {setPreloader, setUserUID} = useContext(AppContext)
     const SignUpnavigation = useNavigation();
 
   useEffect(() => {
-    // Reset the form values when navigating to SignUp
     return () => {
       prop.resetForm();
     };
@@ -46,7 +45,7 @@ export function SignUp({ navigation }) {
             createUserWithEmailAndPassword(
               authentication,
               values.email,
-              values.password
+              values.password,
             )
               .then((userCredential) => {
                 const user = userCredential.user;
@@ -96,7 +95,7 @@ export function SignUp({ navigation }) {
                     <TextInput  
                     onChangeText={prop.handleChange("password")}
                     value={prop.values.password}
-                    onBlur={prop.handleBlur("email")}
+                    onBlur={prop.handleBlur("password")}
                     secureTextEntry
                     />
                   </View>

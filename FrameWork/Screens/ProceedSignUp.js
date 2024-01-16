@@ -24,12 +24,13 @@ const validation = yup.object({
   firstName: yup.string().required().min(3).max(20),
   firstName: yup.string().required().min(2).max(20),
   lastName: yup.string().required().min(2).max(20),
+  Address: yup.string().required(),
   Gender: yup.string().required(),
 });
 
 export function ProceedSignUp( {navigation} ) {
 
-  const { setPreloader } = useContext(AppContext)
+  const { setPreloader, setUserUID } = useContext(AppContext)
   // const navigation = useNavigation();
 
   // useEffect(() => {
@@ -43,31 +44,40 @@ export function ProceedSignUp( {navigation} ) {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <Formik
-          initialValues={{ firstName: "", lastName: "", Gender: "" }}
+          initialValues={{ firstName: "", lastName: "", Gender: "", Address: "" }}
           onSubmit={(value, formikBag) => {
             setPreloader(true)
               onAuthStateChanged(authentication, (user) => {
-                const userUID = user.uid;
-
-                const userDocRef = doc(db, "users", userUID)
-                setDoc(userDocRef, {
-                  firstName: value.firstName,
-                  lastName: value.lastName,
-                  Gender: value.Gender,
-                })
-                .then(()=> {
-                  setPreloader(false);
-                  Alert.alert("Success", "registration complete!")
-                  navigation.navigate("HomePage")
-                })
-                .catch((error)=> {
-                  console.log(error);
+                if (user) {
+                  setUserUID(user.uid  )
+                  const userUID = user.uid;
+  
+                  const userDocRef = doc(db, "users", userUID)
+                  setDoc(userDocRef, {
+                    firstName: value.firstName,
+                    lastName: value.lastName,
+                    Gender: value.Gender,
+                    balance: 0,
+                    Address: value.Address,
+                    AccountStatus: "Active",
+                  })
+                  .then(()=> {
+                    setPreloader(false);
+                    Alert.alert("Success", "registration complete!")
+                    navigation.navigate("HomePage")
+                  })
+                  .catch((error)=> {
+                    console.log(error);
+                    setPreloader(false)
+                    Alert.alert(
+                      "message!",
+                      [{ text: "Sorry, Something went wrong please try again" }]
+                    )
+                  })
+                } else {
                   setPreloader(false)
-                  Alert.alert(
-                    "message!",
-                    [{ text: "Sorry, Something went wrong please try again" }]
-                  )
-                })
+                  Alert.alert("Error", "user not authenticated")
+                }
               })
           }}
           validationSchema={validation}
@@ -132,6 +142,14 @@ export function ProceedSignUp( {navigation} ) {
                     />
                   </View>
                   <Text style={[styles.errors, {display: prop.touched.Gender && prop.errors.Gender}]}>{prop.errors.Gender}</Text>
+                  <Text style={{fontFamily: Theme.fonts.text300}}>Address</Text>
+                  <View style={styles.TextInput}>
+                    <TextInput 
+                    onChangeText={ prop.handleChange("Address") }
+                    value={prop.values.Address}
+                    />
+                  </View>
+                  <Text style={[styles.TextInput, {display: prop.touched.Address && prop.errors.Address ? "flex" : "none"}]}>{prop.errors.Address}</Text>
                   <TouchableOpacity style={styles.btn} onPress={prop.handleSubmit} disabled={prop.isSubmitting}>
                     <Text
                       style={{
