@@ -14,7 +14,7 @@ const validation = yup.object({
         .email("Enter a valid email")
         .min(5)
         .max(30),
-    password: yup.string().required().min(8).max(20)
+    password: yup.string().required().min(5).max(20)
 })
 
 

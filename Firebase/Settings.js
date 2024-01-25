@@ -1,21 +1,30 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth  } from "firebase/auth"
-import { getFirestore } from "firebase/firestore"
+import { getAuth  } from "firebase/auth";
+import 'firebase/compat/storage';
+import firebase from "firebase/compat/app";
+import { getStorage } from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+import { firebaseAPI } from "./APIKeys.key.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDacyb8TZrC3N1FBNpMJR__-Z2jKYY351E",
-  authDomain: "jobplug-1054e.firebaseapp.com",
-  projectId: "jobplug-1054e",
-  storageBucket: "jobplug-1054e.appspot.com",
-  messagingSenderId: "310317222923",
-  appId: "1:310317222923:web:825a7ebc94086258d6cb0e"
+  apiKey: firebaseAPI.apiKey,
+  authDomain: firebaseAPI.authDomain,
+  projectId: firebaseAPI.projectId,
+  storageBucket: firebaseAPI.storageBucket,
+  messagingSenderId: firebaseAPI.messagingSenderId,
+  appId: firebaseAPI.appId
 };
 
 // Initialize Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig)
+}
+export const imgStorage = firebase.storage;
 const app = initializeApp(firebaseConfig);
-export const authentication = getAuth(app)
-export const db = getFirestore(app)
+export const authentication = getAuth(app);
+export const db = getFirestore(app);
+export const storage = getStorage(app);

@@ -17,6 +17,10 @@ import { Notifications } from "../Screens/Notifications";
 import { ProceedSignUp } from "../Screens/ProceedSignUp";
 import { SearchScreen } from "../Screens/SearchScreen";
 import { PostingScreen } from "../Screens/PostingScreen";
+import { ApplyNow } from "../Screens/Applynow";
+import { SeeDetails } from "../Screens/seeDetails";
+import { FundScreen } from "../Screens/FundScreen";
+import { Pay } from "../Screens/Pay";
 
 
 const Stack = createNativeStackNavigator();
@@ -42,6 +46,10 @@ export function StackNavigation() {
         <Stack.Screen name="ProceedSignUp" component={ProceedSignUp} />
         <Stack.Screen name="SearchScreen" component={SearchScreen} />
         <Stack.Screen name="PostingScreen" component={PostingScreen}/>
+        <Stack.Screen name="Apply Now" component={ApplyNow} />
+        <Stack.Screen name="See Details" component={SeeDetails} />
+        <Stack.Screen name="Fund screen" component={FundScreen} />
+        <Stack.Screen name="Payment" component={Pay} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -26,11 +26,12 @@ const validation = yup.object({
   lastName: yup.string().required().min(2).max(20),
   Address: yup.string().required(),
   Gender: yup.string().required(),
+  email: yup.string().required().email(),
 });
 
 export function ProceedSignUp( {navigation} ) {
 
-  const { setPreloader, setUserUID } = useContext(AppContext)
+  const { setPreloader, setUserUID, setUserInfo } = useContext(AppContext)
   // const navigation = useNavigation();
 
   // useEffect(() => {
@@ -44,12 +45,12 @@ export function ProceedSignUp( {navigation} ) {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <Formik
-          initialValues={{ firstName: "", lastName: "", Gender: "", Address: "" }}
-          onSubmit={(value, formikBag) => {
+          initialValues={{ firstName: "", lastName: "", Gender: "", Address: "", email: "" }}
+          onSubmit={(value, formikBag) => { 
             setPreloader(true)
               onAuthStateChanged(authentication, (user) => {
                 if (user) {
-                  setUserUID(user.uid  )
+                  setUserUID(user.uid)
                   const userUID = user.uid;
   
                   const userDocRef = doc(db, "users", userUID)
@@ -60,6 +61,7 @@ export function ProceedSignUp( {navigation} ) {
                     balance: 0,
                     Address: value.Address,
                     AccountStatus: "Active",
+                    email: value.email
                   })
                   .then(()=> {
                     setPreloader(false);
@@ -141,7 +143,7 @@ export function ProceedSignUp( {navigation} ) {
                     value={prop.values.Gender}
                     />
                   </View>
-                  <Text style={[styles.errors, {display: prop.touched.Gender && prop.errors.Gender}]}>{prop.errors.Gender}</Text>
+                  <Text style={[styles.errors, {display: prop.touched.Gender && prop.errors.Gender ? "flex" : "none"}]}>{prop.errors.Gender}</Text>
                   <Text style={{fontFamily: Theme.fonts.text300}}>Address</Text>
                   <View style={styles.TextInput}>
                     <TextInput 
@@ -150,6 +152,14 @@ export function ProceedSignUp( {navigation} ) {
                     />
                   </View>
                   <Text style={[styles.TextInput, {display: prop.touched.Address && prop.errors.Address ? "flex" : "none"}]}>{prop.errors.Address}</Text>
+                  <Text style={{fontFamily: Theme.fonts.text300}}>Email</Text>
+                  <View style={styles.TextInput}>
+                    <TextInput 
+                    onChangeText={prop.handleChange("email")}
+                    value={prop.values.email}
+                    />
+                  </View>
+                  <Text style={[styles.errors, {display: prop.touched.email && prop.errors.email ? "flex" : "none"}]}>{prop.errors.email}</Text>
                   <TouchableOpacity style={styles.btn} onPress={prop.handleSubmit} disabled={prop.isSubmitting}>
                     <Text
                       style={{
