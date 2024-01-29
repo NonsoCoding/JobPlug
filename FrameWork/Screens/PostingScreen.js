@@ -9,17 +9,25 @@ import {
   TouchableOpacity,
   Alert,
   ScrollView,
+  Dimensions,
+  Image,
+  Modal,
+  Pressable,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { Theme } from "../Components/Theme";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { Formik } from "formik";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "./globalVariable";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "../../Firebase/Settings";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { db, imgStorage, storage } from "../../Firebase/Settings";
 import * as yup from "yup"
-import {Picker, } from "@react-native-picker/picker"
+import * as ImagePicker from "expo-image-picker";
+import { Picker } from "@react-native-picker/picker";
+import { getDownloadURL, ref } from "firebase/storage";
+
+
 
 // const validation = yup.object({
 //     jobTitle: yup.string().required(),
@@ -30,7 +38,8 @@ import {Picker, } from "@react-native-picker/picker"
 // })
 
 export function PostingScreen() {
-  const { setPreloader, userUID, setUserUID, userInfo } = useContext(AppContext)
+  const { setPreloader, userUID, setUserUID, userInfo, postID } = useContext(AppContext)
+  const [imagePost, setImagePost] = useState(null);
   const [jobTitle, setJobTitle] = useState("");
   const [company, setCompany] = useState("");
   const [workPlaceType, setWorkPlaceType] = useState("");
@@ -39,12 +48,21 @@ export function PostingScreen() {
   const [salary, setSalary] = useState("");
   const [description, setDescription] = useState(userInfo.email)
   const [contactInfo, setContactInfo] = useState(userInfo.email)
+  const [modalVisibility, setModalVisibility] = useState("");
+  const [preVisibility, setPreVisibility] = useState("");
+  const [imageMD, setImageMD] = useState(false);
+  const [image, setImage] = useState(null);
+  const [image1, setImage1] = useState(null);
+  const [image2, setImage2] = useState(null);
+  const [image3, setImage3] = useState(null)
+  const width = Dimensions.get("screen").width
 
   function handlePostJob() {
     setPreloader(true)
     addDoc(collection(db, "Jobs"), {
         jobTitle,
         jobLocation,
+        imagePost,
         jobType, 
         workPlaceType,
         company,
@@ -53,7 +71,10 @@ export function PostingScreen() {
         contactInfo,
         salary,
         creatAt: new Date().toDateString(),
-        status: "Active"
+        status: "Active",
+        image1,
+        image2,
+        image3,
     }).then(()=> {
         setPreloader(false);
         Alert.alert("Success", "Post has been made successfully!")
@@ -68,6 +89,115 @@ export function PostingScreen() {
         )
       })
   }
+  useEffect(() => {
+    // setPreloader(false)
+  }, []);
+  
+  const closeModal = () => {
+    setModalVisibility(!modalVisibility);
+  };
+  const previewModal = () => {
+    setPreVisibility(!preVisibility);
+  };
+  
+  const imageModal = () => {
+    setImageMD(!imageMD);
+  };
+  
+  
+  async function picker() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+        mediaType: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 4],
+        quality: 1,
+    })
+    console.log(result);
+    if (!result.canceled) {
+        const { uri } = result.assets[0];
+        setImagePost(uri)
+        previewModal();
+    }
+  }
+  
+  async function fetchProfilePic() {
+    setPreloader(true)
+    const reference = ref(storage, `PostingImages/${userUID}`);
+    await getDownloadURL(reference).then(userImg => {
+        updateDoc(doc(db, "users", userUID), {
+            imagePost: userImg
+        }).then(() => {
+            Alert.alert(
+                "Profile Image uploaded",
+                "Your profile picture has been uploaded successfully!",
+            );
+            setPreloader(false)
+        })
+            .catch(() => {
+                Alert.alert(
+                    "Upload Status",
+                    "Failed to update profile image. Please try again",
+                )
+                setPreloader(false);
+            })
+    }).catch(() => {
+        setPreloader(false);
+    })
+  }
+  
+  async function uplaodToStorage() {
+    try {
+        let response = await fetch(imagePost);
+        console.log(response);
+        const imageBlob = await response.blob()
+        await imgStorage().ref().child(`PostingImages/${userUID}`).put(imageBlob);
+    } catch {
+        setPreloader(false)
+        Alert.alert(
+            "Upload Status",
+            "Failed to upload profile image. Please try again",
+            [{ text: 'OK' }]
+        )
+    }
+  }
+  
+  function handleUpload() {
+    setPreloader(true)
+    uplaodToStorage().then(() => {
+        fetchProfilePic()
+    })
+  }
+  
+  function editProfile() {
+    setPreloader(true)
+    updateDoc(doc(db, "users", userUID), {
+        firstName,
+        lastName,
+        address
+  
+    }).then(() => {
+        setPreloader(false)
+        Alert.alert(
+            "Edit Profile",
+            "Profile has been edited successfully",
+        )
+    }).catch((error) => {
+        // console.log(typeof error.code)
+        setPreloader(false)
+        Alert.alert(
+            "Message!",
+            errorMessage(error.code),
+            [{ text: "Try Again" }]
+        )
+    })
+  }
+  
+  
+
+
+  
+
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -177,10 +307,25 @@ export function PostingScreen() {
               padding: 20,
               marginVertical: 10,
             }}
+            onPress={()=> { closeModal()}}
           >
             <FontAwesome name="photo" size={20} />
             <Text style={{ fontFamily: Theme.fonts.text300 }}>photo/video</Text>
           </TouchableOpacity>
+        </View>
+        <Text style={{fontFamily: Theme.fonts.text900, fontSize: 25}}>Logo Image*</Text>
+        <Image source={{uri: userInfo.imagePost}} style={{width: 150, height: 150, borderWidth: 1, marginVertical: 10}}/>
+        <TouchableOpacity>
+          <Text style={{fontFamily: Theme.fonts.text900, fontSize: 25}}>Select slide photos*</Text>
+        </TouchableOpacity>
+        <View style={{flexDirection: "row", alignItems: "center", marginBottom: 10}}>
+          <TouchableOpacity>
+        <Image source={{}} style={{width: 100, height: 100, borderWidth: 1, margin: 5}} />
+          </TouchableOpacity>
+        <Image source={{}} style={{width: 100, height: 100, borderWidth: 1, margin: 5}}/>
+        <TouchableOpacity>
+        <Image source={{}} style={{width: 100, height: 100, borderWidth: 1, margin: 5}}/>
+        </TouchableOpacity>
         </View>
         <TouchableOpacity
           style={[
@@ -196,6 +341,93 @@ export function PostingScreen() {
             Share now
           </Text>
         </TouchableOpacity>
+        <Modal
+              visible={modalVisibility}
+              animationType="slide"
+              transparent={true}
+          >
+              <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)" }}>
+                  <Pressable style={{ flex: 1 }} onPress={closeModal} >
+                  </Pressable>
+                  <View style={{ backgroundColor: "#16171D", height: 170, borderTopRightRadius: 20, borderTopLeftRadius: 20 }}>
+                      <View style={{ alignItems: 'flex-end', margin: 10 }}>
+                          {/* <TouchableOpacity onPress={closeModal}>
+                          </TouchableOpacity> */}
+                      </View>
+                      <View>
+
+                          <TouchableOpacity onPress={() => {
+                              closeModal(); picker();
+                          }}>
+                              <View style={{ margin: 10, marginTop: 0, padding: 5, flexDirection: "row", }}>
+                                  <Text style={{ fontSize: 15, paddingLeft: 5, color: "white" }}>Gallery</Text>
+                              </View>
+                          </TouchableOpacity>
+                          <View
+                              style={{
+                                  borderBottomColor: Theme.colors.primary,
+                                  borderBottomWidth: StyleSheet.hairlineWidth,
+                                  margin: 10, marginTop: 0
+                              }}
+                          />
+                          <TouchableOpacity onPress={() => {
+                              closeModal()
+                          }}>
+                              <View style={{ margin: 10, marginTop: 0, padding: 5, flexDirection: "row" }}>
+                                  <Text style={{ fontSize: 15, paddingLeft: 5, color: "white" }}>
+                                      Camera
+                                  </Text>
+                              </View>
+                          </TouchableOpacity>
+                      </View>
+
+                  </View>
+
+              </View>
+          </Modal>
+
+          {/* <====================> Preview Image before Uploading <====================> */}
+          <Modal
+              visible={preVisibility}
+              transparent={true}
+          >
+              <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)" }}>
+                  <Pressable style={{ flex: 1 }} onPress={previewModal} >
+                  </Pressable>
+                  <View style={{ backgroundColor: '#16171D', height: 500, borderTopRightRadius: 20, borderTopLeftRadius: 20 }}>
+                      <View style={{ alignItems: 'flex-end', margin: 10 }}>
+                          <TouchableOpacity onPress={previewModal}>
+                          </TouchableOpacity>
+                      </View>
+                      <View style={{ alignItems: 'center', padding: 5, justifyContent: 'center' }}>
+                          <Image source={{uri: imagePost}} style={{ width: 300, height: 300, borderRadius: 400, }} />
+                      </View>
+                      <TouchableOpacity onPress={() => { previewModal(); handleUpload() }}
+                          style={[styles.getStarted, { marginHorizontal: 10, alignItems: 'center', padding: 30 }]}>
+                          <Text style={{ fontFamily: Theme.fonts.text500, fontSize: 16, color: Theme.colors.white}}>Upload Image</Text>
+                      </TouchableOpacity>
+                  </View>
+              </View>
+          </Modal>
+
+          {/* ============================> Profile Modal <============================ */}
+          <Modal
+              visible={imageMD}
+              animationType="slide"
+              transparent={true}
+          >
+              <View style={{ flex: 1, backgroundColor: "#16171df4" }}>
+                  <Pressable style={{ flex: 1 }} onPress={imageModal} >
+                  </Pressable>
+                  <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                      <Image source={{uri: userInfo.imagePost}}
+                          style={{ width: width - 5, height: width - 5 }}
+                      />
+                  </View>
+                  <Pressable style={{ flex: 1 }} onPress={imageModal} >
+                  </Pressable>
+              </View>
+          </Modal>
       </View>
       </ScrollView>
     </SafeAreaView>

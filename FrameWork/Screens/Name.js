@@ -3,11 +3,6 @@ import { Theme } from "../Components/Theme";
 
 export function NameScreen() {
 
-// const isDarkMode = useColorScheme() === 'dark'
-
-// const backgroundStyle = {
-//     backgroundColor: isDarkMode ? 'black' : 'white'
-// }
 
     return (
         <SafeAreaView style={{flex: 1}}>

@@ -21,6 +21,9 @@ import { ApplyNow } from "../Screens/Applynow";
 import { SeeDetails } from "../Screens/seeDetails";
 import { FundScreen } from "../Screens/FundScreen";
 import { Pay } from "../Screens/Pay";
+import { AppliedJobs } from "../Screens/AppliedJobs";
+import { View } from "react-native";
+import { PostedJobs } from "../Screens/PostJobs";
 
 
 const Stack = createNativeStackNavigator();
@@ -50,6 +53,8 @@ export function StackNavigation() {
         <Stack.Screen name="See Details" component={SeeDetails} />
         <Stack.Screen name="Fund screen" component={FundScreen} />
         <Stack.Screen name="Payment" component={Pay} />
+        <Stack.Screen name="Applied Jobs" component={AppliedJobs} />
+        <Stack.Screen name="Job posted" component={PostedJobs} />
       </Stack.Navigator>
     </NavigationContainer>
   );

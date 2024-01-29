@@ -5,10 +5,12 @@ import { AppContext } from "./globalVariable";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../Firebase/Settings";
 
-export function ApplyNow() {
-const {userInfo, setPreloader, userUID} = useContext(AppContext);
+export function ApplyNow({ navigation, route}) {
+const {userInfo, setPreloader, userUID, docID} = useContext(AppContext);
 
-const [description, setDescription] = useState("");
+const {jobTitle, jobLocation, imagePost, description,
+jobType} = route.params;
+
 const [address, setAddress] = useState("")
 const [Image, setImage] = useState("")
 const [firstName, setFirstName] = useState(userInfo.firstName)
@@ -21,23 +23,32 @@ function handleApplyJobs() {
     setPreloader(true);
     addDoc(collection(db, "Applied Jobs"), {
         Image, 
-        description,
         address,
         lastName,
-        email, 
+        email,
+        jobTitle,
+        jobLocation,
+        description,
+        jobType,
         firstName,
-        appliedAt: new Date().toDateString()
+        imagePost,
+        userUID,
+        jobID: docID,
+        appliedAt: new Date().toDateString(),
+        
     }).then(()=> {
         setPreloader(false)
         Alert.alert(
             "Application",
             "Application sent successfully"
         )
-    }).catch(()=> {
+    }).catch((error)=> {
+        console.log(error);
         setPreloader(false);
         Alert.alert(
             "Application Failed",
             "Failed to Apply, Please try again!"
+            [{ text: "Try Again" }]
         )
     })
 }
@@ -81,18 +92,11 @@ function handleApplyJobs() {
                 onChangeText={(inp)=> setAddress(inp.trim())}
                 />
                 </View>
-                <Text>Description</Text>
-                <View>
-                <TextInput placeholder="Description"
-                style={styles.TextInput}
-                onChangeText={(inp)=> setDescription(inp.trim())}
-                />
-                </View>
                 <TouchableOpacity style={styles.btn}>
                     <Text style={{color: "white", fontFamily: Theme.fonts.text900,}}>Upload CV</Text>
                 </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.btn} onPress={handleApplyJobs}>
+                <TouchableOpacity style={styles.btn} onPress={() => handleApplyJobs()}>
                     <Text style={{color: "white", fontFamily: Theme.fonts.text900,}}>Apply Now</Text>
                 </TouchableOpacity>
             </View>
@@ -103,7 +107,7 @@ function handleApplyJobs() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // margin: Platform.OS == 'android' ? StatusBar.currentHeight : null,
+        margin: Platform.OS == 'android' ? StatusBar.currentHeight : null,
         padding: 20,
         justifyContent: "space-between"
     },

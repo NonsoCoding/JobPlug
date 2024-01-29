@@ -1,4 +1,4 @@
-import { View, StyleSheet, SafeAreaView, Text, StatusBar, Platform, Image, FlatList, ImageBackground, Dimensions, TouchableOpacity } from "react-native";
+import { View, StyleSheet, SafeAreaView, Text, StatusBar, Platform, Image, FlatList, ImageBackground, Dimensions, TouchableOpacity, ScrollView } from "react-native";
 import { Theme } from "../Components/Theme";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "./globalVariable";
@@ -9,17 +9,12 @@ import { useRoute } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons"
 import AntDesign from "react-native-vector-icons/AntDesign"
 
-const CarouselLinks = [
-    "https://www.earlycode.net/_next/image?url=%2Fimages%2Fearlycode_logo.png&w=64&q=75",
-    "https://images.pexels.com/photos/5439436/pexels-photo-5439436.jpeg?auto=compress&cs=tinysrgb&w=600",
-    "https://images.pexels.com/photos/5668859/pexels-photo-5668859.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-  ];
 
   const screenwidth = Dimensions.get("screen").width;
 export function SeeDetails({navigation}) {
-    const {postID, setPostID, userUID, setUserInfo} = useContext(AppContext);
+    const {postID, setPostID, userUID, setUserInfo, setDocID} = useContext(AppContext);
     const [jobPostData, setJobPostData] = useState("");
-  
+
     useEffect(() => {
       const fetchJobPostData = async () => {
         try {
@@ -39,6 +34,7 @@ export function SeeDetails({navigation}) {
       };
   
       fetchJobPostData();
+      console.log();
     }, [docID]);
   
       const route = useRoute();
@@ -51,31 +47,7 @@ export function SeeDetails({navigation}) {
               <Text style={{fontFamily: Theme.fonts.text900, fontSize: 40, marginBottom: 10}}>Job Details</Text>
             <View style={{ flex: 1, justifyContent: "space-between" }}>
               <View>
-            <Carousel
-              loop
-              width={screenwidth}
-              height={300}
-              autoPlay={false}
-              data={CarouselLinks}
-              scrollAnimationDuration={2000}
-              // onSnapToItem={(index) => console.log('current index:', index)}
-              renderItem={({ index }) => (
-                <View
-                  style={{
-                    margin: 1,
-                  }}
-                >
-                  <Image
-                    style={{
-                      width: "100%",
-                      height: 250,
-                      borderRadius: 10,
-                    }}
-                    source={{ uri: CarouselLinks[index] }}
-                  />
-                </View>
-              )}
-            />
+            <Image source={{uri: jobPostData.imagePost}} style={{height: "60%", width: "110%", alignSelf: "center"}}/>
             <View>
           <Text style={{fontSize: 30, fontFamily: Theme.fonts.text900}}>{jobPostData.jobTitle}</Text>
           <View style={{flexDirection: "row", alignItems: "center", marginTop: 10}}>
@@ -103,7 +75,7 @@ export function SeeDetails({navigation}) {
               <TouchableOpacity style={styles.heartBtn}>
               <AntDesign name="heart" size={40} color={Theme.colors.blueMedium} />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.btn}>
+              <TouchableOpacity style={styles.btn} onPress={() => {navigation.navigate("Apply Now", {docID, jobTitle: jobPostData.jobTitle, jobLocation: jobPostData.jobLocation})}}>
               <Text style={{color: Theme.colors.white, fontSize: 20, fontFamily: Theme.fonts.text800}}>Apply now</Text>
               </TouchableOpacity>
             </View>

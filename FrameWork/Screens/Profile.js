@@ -109,7 +109,7 @@ export function Profile({ navigation }) {
           </Text>
         </TouchableOpacity>
         <View>
-          <TouchableOpacity style={styles.ProfileBtn}>
+          <TouchableOpacity style={styles.ProfileBtn} onPress={() => navigation.navigate("Job posted")}>
             <MaterialCommunityIcons
               name="account"
               size={25}
@@ -117,8 +117,12 @@ export function Profile({ navigation }) {
               style={{ paddingHorizontal: 10 }}
             />
             <Text style={styles.profileTEXT}>
-              My Account
+              My Jobs
             </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.ProfileBtn} onPress={()=> navigation.navigate("Applied Jobs")}>
+            <MaterialIcons name="support-agent" size={25} color={Theme.colors.blueMedium} style={{ paddingHorizontal: 10 }} />
+            <Text style={styles.profileTEXT}>Applied Jobs</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.ProfileBtn}
@@ -131,32 +135,11 @@ export function Profile({ navigation }) {
               style={{ paddingHorizontal: 10 }}
             />
             <Text style={styles.profileTEXT}>Help Center</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.ProfileBtn}
-            onPress={() => navigation.navigate("Change Password")}
-          >
-            <FontAwesome5 name="address-card" size={25}  color={Theme.colors.blueMedium}style={{ paddingRight: 10, paddingHorizontal: 10 }} />
-            <Text style={styles.profileTEXT}>
-              Address
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.ProfileBtn} onPress={closeModal}>
-            <MaterialIcons name="support-agent" size={25} color={Theme.colors.blueMedium} style={{ paddingHorizontal: 10 }} />
-            <Text style={styles.profileTEXT}>Support</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.ProfileBtn}>
+          </TouchableOpacity >
+          <TouchableOpacity style={styles.ProfileBtn} onPress={()=> navigation.navigate("Reset password")}>
             <Fontisto name="locked" size={25} color={Theme.colors.blueMedium} style={{ paddingHorizontal: 10 }} />
             <Text style={styles.profileTEXT}>Password and Security</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity style={{borderWidth: 1, alignSelf: "center", flexDirection: "row", padding: 10}}onPress={closeModal}>
-            <SimpleLineIcons
-              name="logout"
-              size={30}
-              style={{ paddingRight: 20, alignSelf: "center" }}
-            />
-            <Text style={{ fontFamily: Theme.fonts.text500, alignSelf: "center" }}>Logout</Text>
-          </TouchableOpacity> */}
           <TouchableOpacity style={{borderWidth: 1, alignItems: "center", padding: 10, 
           borderRadius: 10, backgroundColor: Theme.colors.blueMedium, 
           borderColor: Theme.colors.blueMedium, flexDirection: 'row', alignItems: "center",}} onPress={closeModal}>

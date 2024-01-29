@@ -45,7 +45,7 @@ const CarouselLinks = [
 const screenwidth = Dimensions.get("screen").width;
 
 function Home({ navigation }) {
-  const { userUID, setUserInfo, userInfo, setPreloader } = useContext(AppContext);
+  const { userUID, setUserInfo, userInfo, setPreloader, setDocID, setAllJobs } = useContext(AppContext);
   const [jobs, setJobs] = useState([]);
 
   async function getUserinfo() {
@@ -59,22 +59,18 @@ function Home({ navigation }) {
     setPost(post.data());
     console.log(post.data());
   }
-
-
   useEffect(() => {
     // console.log(userUID);
     onSnapshot(collection(db, "Jobs"), (snapshot) => {
-      const allData = [];
-      snapshot.forEach((Item) => {
-        allData.push({ ...Item.data(), docID: Item.id });
-        const PostId = Item.id
-        console.log(PostId);
-      });
-      setJobs(allData);
-    });
-    getUserinfo();
-    // getUserPost()
-  }, []);
+        const allData = []
+        snapshot.forEach(item => {
+            allData.push({ ...item.data(), docID: item.id })
+        })
+        setJobs(allData);
+        setAllJobs(allData);
+    })
+    getUserinfo()
+}, [])
   
 
   
@@ -98,6 +94,16 @@ function Home({ navigation }) {
         }
     }
 }
+useEffect(()=> {
+  onSnapshot(collection(db, "Jobs"), (snapshot)=> {
+    const allData = []
+    snapshot.forEach(item => {
+      allData.push({ ...item.data(), docID: item.id})
+    })
+    setJobs(allData);
+  })
+  getUserinfo();
+}, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -142,7 +148,6 @@ function Home({ navigation }) {
               autoPlay={true}
               data={CarouselLinks}
               scrollAnimationDuration={2000}
-              // onSnapToItem={(index) => console.log('current index:', index)}
               renderItem={({ index }) => (
                 <View
                   style={{
@@ -188,7 +193,7 @@ function Home({ navigation }) {
                 </Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=> navigation.navigate("Job posted")}>
               <View
                 style={{
                   padding: 10,
@@ -207,7 +212,7 @@ function Home({ navigation }) {
                 </Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=> navigation.navigate("SearchScreen")}>
+            <TouchableOpacity onPress={()=> navigation.navigate("Applied Jobs")}>
               <View
                 style={{
                   padding: 10,
@@ -222,14 +227,13 @@ function Home({ navigation }) {
                 <Text
                   style={{ color: "white", fontFamily: Theme.fonts.text600 }}
                 >
-                  Top Jobs
+                  Applied Jobs
                 </Text>
               </View>
             </TouchableOpacity>
           </View>
-          <FlatList
-          data={jobs}
-          renderItem={({ item }) => {
+          {jobs.map(item => {
+
             return (
               <View
                 style={{
@@ -259,7 +263,7 @@ function Home({ navigation }) {
                   >
                     <View style={{flexDirection: "row", alignItems: "center"}}>
                     <Image
-                      source={{uri: "https://www.earlycode.net/_next/image?url=%2Fimages%2Fearlycode_logo.png&w=64&q=75"}}
+                      source={{uri: item.imagePost}}
                       style={{ width: 70, height: 70 }}
                     />
                     <View style={{alignItems: "center", flexDirection: "row"}}>
@@ -292,15 +296,16 @@ function Home({ navigation }) {
                     onPress={() => navigation.navigate("See Details", { docID: item.docID })}>
                       <Text style={{fontFamily: Theme.fonts.text600, color: Theme.colors.blueMedium}}>See details</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{padding: 10, borderWidth: 1, borderRadius: 20, borderColor: Theme.colors.blueMedium, backgroundColor: Theme.colors.blueMedium}} onPress={()=> navigation.navigate("Apply Now")}>
+                    <TouchableOpacity style={{padding: 10, borderWidth: 1, borderRadius: 20, borderColor: Theme.colors.blueMedium, 
+                      backgroundColor: Theme.colors.blueMedium}} onPress={() => { navigation.navigate("Apply Now", { jobTitle: item.jobTitle, jobLocation: item.jobLocation
+                      , description: item.description, jobType: item.jobType, imagePost: item.imagePost}); setDocID(item.docID) }}>
                       <Text style={{fontFamily: Theme.fonts.text600, color: "white"}}>Apply now</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
               </View>
             );
-          }}
-        ></FlatList>
+          })}
         </View>
       </ScrollView>
     </SafeAreaView>

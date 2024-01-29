@@ -48,104 +48,8 @@ export function EditProfile({ navigation }) {
   const [imageMD, setimageMD] = useState(false);
   const [image, setImage] = useState(null);
   const width = Dimensions.get("screen").width
+  const [address, setAddress] = useState("");
 
-
-//   useEffect(()=> {
-//     // setPreloader(false)
-//   }, []);
-
-//   const closeModal = ()=> {
-//     setModalVisibility(!modalVisibility);
-//   };
-//   const previewModal = () => {
-//     setPreVisibility(!preVisibility);
-//   };
-//   const imageModal = () => {
-//     setImageMD(!imageMD);
-//   };
-
-// async function picker() {
-//   const result = await ImagePicker.launchImageLibraryAsync({
-//     allowsEditing: true,
-//     aspect: [4, 4],
-//     quality: 1,
-//   })
-//   console.log(result);
-//   if (!result.canceled) {
-//     const { uri } = result.assets[0];
-//     setImage(uri)
-//     previewModal();
-//   }
-// }
-
-//   function editProfile() {
-//     setPreloader(true)
-//     updateDoc(doc(db, "users", userUID), {
-//       firstName,
-//       lastName,
-//       image,
-//     }).then(() => {
-//       setPreloader(false)
-//       Alert.alert(
-//         "Edit profile",
-//         "profile has been edited successfully",
-//       )
-//     }).catch((error)=> {
-//       setPreloader(false)
-//       console.log(error);
-//       Alert.alert(
-//         "Message!",
-//         "Failed to make changes"
-//       )
-//     })
-//   }
-
-//   async function getProfilePic() {
-//     setPreloader(true)
-//     const reference = ref(storage,`ProfileIages/${userUID}`);
-//     await getDownloadURL(reference).then(userImg => {
-//       updateDoc(doc(db, "users", userUID), {
-//         image: userImg
-//       }).then(()=> {
-//         Alert.alert(
-//           "Profile Image uploaded",
-//           "Your profile picture has been uploaded successfully",
-//         );
-//         setPreloader(false);
-//       }).catch(()=> {
-//         Alert.alert(
-//           "Upload failed",
-//           "Failed to Update profile picture. Please try again"
-//         )
-//         setPreloader(false);
-//       })
-//     }).catch(()=> {
-//       setPreloader(false);
-//     })
-//   }
-
-//   async function upLoadToStorage() {
-//     try {
-//       let response = await fetch(image);
-//       console.log(response);
-//       const imageBlob = await response.blob()
-//       await imgStorage().ref().child(`ProfileImages/${userUID}`).put(imageBlob);
-//     } catch {
-//       setPreloader(false);
-//       Alert.alert(
-//         "Upload Failed",
-//         "Failed to upload image. Please try again",
-//         [{ text: "OK"}]
-//       )
-//     }
-//   }
-
-//   function handleUpload() {
-//     setPreloader(true)
-//     upLoadToStorage().then(()=> {
-//        getProfilePic()
-//     })
-//   }
 
 useEffect(() => {
   // setPreloader(false)
@@ -166,7 +70,7 @@ const imageModal = () => {
 async function picker() {
   const result = await ImagePicker.launchImageLibraryAsync({
       mediaType: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
+      allowsEditing: true,
       aspect: [4, 4],
       quality: 1,
   })
@@ -232,6 +136,7 @@ function editProfile() {
       firstName,
       lastName,
       image,
+      address
 
   }).then(() => {
       setPreloader(false)
@@ -277,170 +182,20 @@ function editProfile() {
     //             bottom: 0, right: 10, zIndex: 11}}/>
     //         </Pressable>
     //       <TouchableOpacity>
-    //       <Text style={{fontFamily: Theme.fonts.text900, paddingHorizontal: 20, 
-    //         paddingTop: 10, color: Theme.colors.blueMedium}} onPress={closeModal}>Edit</Text>
-    //       </TouchableOpacity>
-    //         </View>
-    //         <Modal visible={modalVisibility}
-    //         animationType="slide"
-    //         transparent={true}
-    //         >
-    //         <View style={{flex: 1, backgroundColor: "rgba(0,0,0,0.8)"}}>
-    //         <Pressable style={{flex: 1}} onPress={closeModal}></Pressable>
-    //         <View style={{
-    //         height: 300,
-    //         backgroundColor: "#fcfbff",
-    //         borderTopLeftRadius: 20,
-    //         borderTopRightRadius: 20,
-    //         }}>
-    //         <View style={{alignItems: "flex-end", margin: 10}}> 
-    //         <TouchableOpacity onPress={closeModal}>
-    //         </TouchableOpacity>
-    //         </View>
-    //         <View>
-    //         <View style={{ alignItems: "center", marginBottom: 10}}>
-    //         <Text style={{fontFamily: Theme.fonts.text900}}>Edit profile picture</Text>
-    //         </View>
-    //         <View style={{
-    //         alignItems: "center",
-    //         marginTop: 20,
-    //         margin: 15,
-    //         padding: 0,
-    //         borderRadius: 8
-    //         }}
-    //         >
-    //         <View
-    //         style={{
-    //                   backgroundColor: Theme.colors.blueMedium,
-    //                   width: "100%",
-    //                   // alignItems: "center",
-    //                   padding: 10,
-    //                   borderRadius: 8,
-    //                 }}
-    //         >
-    //         <TouchableOpacity style={{padding: 15, borderBottomWidth: 0.5}} onPress={()=> {Pickcamera()}}>
-    //         <Pressable style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}} >
-    //         <Text style={{ color: "white", fontWeight: "bold", fontFamily: Theme.fonts.text900 }} >
-    //                   Take a photo
-    //                 </Text>
-    //                 <FontAwesome
-    //           name="camera"
-    //           size={25}
-    //           color="white"
-    //           style={{ paddingRight: 5 }}
-    //         />
-    //         </Pressable>
-    //         </TouchableOpacity>
-    //         <TouchableOpacity style={{padding: 15, borderBottomWidth: 0.5}}  onPress={() => { previewModal(); handleUpload() }}>
-    //         <Pressable style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-    //         <Text style={{ color: "white", fontWeight: "bold", fontFamily: Theme.fonts.text900 }} >
-    //                   Choose a photo
-    //           </Text>
-    //           <FontAwesome
-    //           name="photo"
-    //           size={25}
-    //           color="white"
-    //           style={{ paddingRight: 5 }}
-    //         />
-    //         </Pressable>
-    //         </TouchableOpacity>
-    //         <TouchableOpacity style={{padding: 15, }}>
-    //         <Pressable style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-    //         <Text style={{ color: "white", fontWeight: "bold", fontFamily: Theme.fonts.text900 }} >
-    //                   View profile picture
-    //           </Text>
-    //           <AntDesign
-    //           name="aliwangwang"
-    //           size={25}
-    //           color="white"
-    //           style={{ paddingRight: 5 }}
-    //         />
-    //         </Pressable>
-    //         </TouchableOpacity>
-    //         </View>
-    //         </View>
-    //         </View>
-    //         </View>
-    //         </View>
-    //         </Modal>
-            
-    //       </View>
-    //     <View>
-    //       <Text style={styles.TopText}>firstName*</Text>
-    //       <View  style={{borderWidth: 1, padding: 13, borderRadius: 10, marginVertical: 10, flexDirection: "row", alignItems: "center"}}>
-    //         <MaterialCommunityIcons
-    //           name="account"
-    //           size={25}
-    //           color={Theme.colors.blueMedium}
-    //           style={{ paddingRight: 5 }}
-    //         />
-    //         <TextInput style={styles.Text} placeholder={userInfo.firstName}
-    //         onChangeText={(text) => setFirstName(text.trim())}
-    //         value={firstName}
-    //         keyboardType="default"
-    //         autoCapitalize="words"
-    //         mode="outlined"
-    //         />
-    //       </View>
-    //       <Text style={styles.TopText}>lastName*</Text>
-    //       <View style={{borderWidth: 1, padding: 13, borderRadius: 10, marginVertical: 10, flexDirection: "row", alignItems: "center"}} >
-    //       <MaterialCommunityIcons
-    //           name="account"
-    //           size={25}
-    //           color={Theme.colors.blueMedium}
-    //           style={{ paddingRight: 5 }}
-    //         />
-    //         <TextInput style={styles.Text} placeholder={userInfo.lastName}
-    //         onChangeText={(text)=> setLastName(text.trim())}
-    //         value={lastName}
-    //         keyboardType="default"
-    //         autoCapitalize="words"
-    //         mode="outlined"
-    //         />
-    //       </View>
-    //       <Text style={styles.TopText}>Email*</Text>
-    //       <View style={{borderWidth: 1, padding: 13, borderRadius: 10, marginVertical: 10, flexDirection: "row", alignItems: "center"}} >
-    //       <MaterialCommunityIcons
-    //           name="email"
-    //           size={25}
-    //           color={Theme.colors.blueMedium}
-    //           style={{ paddingRight: 5 }}
-    //         />
-    //         <TextInput style={styles.Text} placeholder={userInfo.email}/>
-    //       </View>
-    //       <Text style={styles.TopText}>Bio*</Text>
-    //       <View style={{borderRadius: 10, borderWidth: 1, padding: 13}}>
-    //         <TextInput
-    //         numberOfLines={5}
-    //         multiline={true}
-    //         />
-    //       </View>
-    //     </View>
-    //           </View>
-    //         )
-    //       }}
-    //     </Formik>
-    //     <TouchableOpacity style={{borderRadius: 10, borderWidth: 1, 
-    //       padding: 20, alignItems: 'center', fontFamily: Theme.fonts.text500,
-    //       backgroundColor: Theme.colors.blueMedium, borderColor: Theme.colors.blueMedium}} onPress={editProfile}>
-    //       <Text style={{color: 'white', fontFamily: Theme.fonts.text900}}>Edit</Text>
-    //     </TouchableOpacity>
-    //   </View>
-    //   </KeyboardAvoidingView>
-    // </SafeAreaView>
+    //         
     <SafeAreaView style={{flex: 1}}>
 
       <View style={styles.container}>
           <View style={styles.body}>
-              {/* <ScrollView > */}
               <View style={styles.header}>
                   <View style={{ position: "relative" }}>
                       <Pressable onPress={imageModal}>
                           <Image source={{ uri: userInfo.image }}
-                              defaultSource={require("../../assets/Avatar.png")}
+                              defaultSource={require("../../assets/profile.png")}
                               style={styles.ProfileImage} />
                       </Pressable>
                       <TouchableOpacity onPress={closeModal} style={styles.BtnIcon}>
+                        <MaterialCommunityIcons name="camera" size={25}/>
                       </TouchableOpacity>
                   </View>
               </View>
@@ -452,7 +207,7 @@ function editProfile() {
                       <TextInput
                           style={styles.inputStyle}
                           keyboardType='default'
-                          placeholder='Last name'
+                          placeholder={userInfo.firstName}
                           autoCapitalize='words'
                           mode='outlined'
                           onChangeText={(text) => setFirstName(text.trim())}
@@ -468,6 +223,19 @@ function editProfile() {
                           autoCapitalize='words'
                           onChangeText={(text) => setLastName(text.trim())}
                           value={lastName}
+                      />
+                      <Text style={styles.signupText}>Email</Text>
+                      <TextInput 
+                      placeholder={userInfo.email}
+                      value={userInfo.email}
+                      style={styles.inputStyle}
+                      />
+                      <Text style={styles.signupText}>Address</Text>
+                      <TextInput 
+                      placeholder={userInfo.address}
+                      value={userInfo.address}
+                      style={styles.inputStyle}
+                      onChangeText={(text) => setAddress(text.trim())}
                       />
                       <TouchableOpacity onPress={editProfile}
                           style={[styles.getStarted, { marginHorizontal: 10 }]}>
@@ -538,7 +306,7 @@ function editProfile() {
                           </TouchableOpacity>
                       </View>
                       <View style={{ alignItems: 'center', padding: 5, justifyContent: 'center' }}>
-                          <Image source={{ uri: image }} style={{ width: 300, height: 300, borderRadius: 400, }} />
+                          <Image source={{uri: image}} style={{ width: 300, height: 300, borderRadius: 400, }} />
                       </View>
                       <TouchableOpacity onPress={() => { previewModal(); handleUpload() }}
                           style={[styles.getStarted, { marginHorizontal: 10 }]}>
@@ -558,7 +326,7 @@ function editProfile() {
                   <Pressable style={{ flex: 1 }} onPress={imageModal} >
                   </Pressable>
                   <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                      <Image source={require('../../assets/Avatar.png')}
+                      <Image source={{uri: userInfo.image}}
                           style={{ width: width - 5, height: width - 5 }}
                       />
                   </View>

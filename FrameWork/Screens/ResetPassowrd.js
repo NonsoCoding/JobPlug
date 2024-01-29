@@ -15,26 +15,6 @@ const validationSchema = yup.object({
 
 export function ResetPassword({ navigation, route }) {
 
-    // const { setPreloader } = useContext(AppContext);
-    // const {email, setEmail} = useState("");
-
-    // function passwordReset() {
-    //     setPreloader
-    //     sendPasswordResetEmail(authentication, email).then(()=> {
-    //         setPreloader(false)
-    //         Alert.alert(
-    //             "Password reset",
-    //             "A password reset link has been sent to your mail",
-    //         )
-    //     }).catch((e) => {
-    //         console.log(e);
-    //         setPreloader(false)
-    //         // Alert.alert(
-    //         //     "Password Reset",
-
-    //         // );
-    //     })
-    // }
     const { setPreloader } = useContext(AppContext)
     const [email, setEmail] = useState("")
 
@@ -49,10 +29,10 @@ export function ResetPassword({ navigation, route }) {
         }).catch((e) => {
             console.log(e);
             setPreloader(false)
-            // Alert.alert(
-            //     "Password Reset",
-
-            // );
+            Alert.alert(
+                "Failed!",
+                "Sorry, we could not reset your password. Please try again later."
+            )
         })
     }
 

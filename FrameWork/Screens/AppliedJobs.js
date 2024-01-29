@@ -1,87 +1,58 @@
-import {
-  View,
-  StatusBar,
-  StyleSheet,
-  SafeAreaView,
-  Text,
-  Platform,
-  TextInput,
-  FlatList,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, SafeAreaView, Text, StatusBar, StyleSheet, Platform, TouchableOpacity, TextInput, useColorScheme, FlatList, Image, Alert } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import use, { useContext, useEffect, useState } from "react";
 import { db } from "../../Firebase/Settings";
 import { AppContext } from "./globalVariable";
-import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, onSnapshot, query, where } from "firebase/firestore";
 import { Theme } from "../Components/Theme";
 import AntDesign from "react-native-vector-icons/AntDesign";
 
-export function SearchScreen() {
-  const { userUID, setPost, setUserInfo, allJobs } = useContext(AppContext);
-  const [search, setSearch] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
 
-  // async function getUserPost() {
-  //   const post = await getDoc(doc(db, "Jobs", userUID));
-  //   setJobs(post.data());
-  //   console.log(post.data());
-  // }
-  // async function getUserinfo() {
-  //   const userInfo = await getDoc(doc(db, "users", userUID));
-  //   setUserInfo(userInfo.data());
-  //   console.log(userInfo.data());
-  // }
-  // useEffect(() => {
-  //   // console.log(userUID);
-  //   onSnapshot(collection(db, "Jobs"), (snapshot) => {
-  //     const allData = [];
-  //     snapshot.forEach((Item) => {
-  //       allData.push({ ...Item.data(), docID: Item.id });
-  //       // console.log(Item.data());
-  //     });
-  //     setJobs(allData);
-  //   });
-  //   getUserinfo();
-  //   // getUserPost()
-  // }, []);
-  // const filteredJobs = jobs.filter((job) =>
-  //   job.jobTitle.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
-  useEffect(() => {
-    setSearchTerm(allJobs)
-}, [])
+export function AppliedJobs() {
+    const { userUID, setPost, setUserInfo, setPreloader, docID } = useContext(AppContext);
+    const [jobs, setJobs] = useState([]);
+  
+    
+    useEffect(() => {
+      const q = collection(db, 'Applied Jobs');
+        const filter = query(q, where('userUID', '==', userUID));
+        onSnapshot(filter, (snapshot) => {
+            const allData = []
+            snapshot.forEach(item => {
+                allData.push({ ...item.data(), docID: item.id })
+            })
+            console.log(allData);
+            setJobs(allData);
+        })
+    }, []);
 
-function handleSearch(inp) {
-    const nn = "App"
-    nn.toUpperCase().includes()
-    const filtered = allJobs.filter(all => {
-        return all.jobTitle.toLowerCase().includes(inp.toLowerCase()) ||
-            all.company.toLowerCase().includes(inp.toLowerCase()) || all.jobLocation.toLowerCase().includes(inp.toLowerCase())
-    })
-    setSearchTerm(filtered);
-}
-
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <View style={styles.SearchDesign}>
-          <View>
-            <Ionicons name="search" size={25} color={"#999999"} />
-          </View>
-          <View>
-            <TextInput
-              style={styles.SearchView}
-              placeholder="Search"
-              placeholderTextColor={"#999999"}
-              color={Theme.colors.blueMedium}
-              onChangeText={(inp)=> handleSearch(inp)}
-            />
-          </View>
-        </View>
-        <FlatList
-          data={searchTerm}
+    const deleteRequest = (id) => {
+        const docRef = doc(db, "Applied Jobs", id);
+        setPreloader(true);
+          deleteDoc(docRef)
+            .then(() => {
+                setPreloader(false)
+                Alert.alert(
+                    "Delete application",
+                    "Application deleted successfully"
+                )
+            })
+            .catch(() => {
+                setPreloader(false)
+                Alert.alert(
+                    "Delete application",
+                    "Delete Application failed",
+                    [{ text: "Try Again" }]
+                )
+            })
+    }
+  
+    return (
+        <SafeAreaView style={{flex: 1}}>
+            <View style={[styles.container]}>
+                <Text style={{fontSize: 30, fontFamily: Theme.fonts.text900}}>Applied Jobs</Text>
+                <FlatList
+          data={jobs}
           renderItem={({ item }) => {
             return (
               <View
@@ -112,7 +83,7 @@ function handleSearch(inp) {
                   >
                     <View style={{flexDirection: "row", alignItems: "center"}}>
                     <Image
-                      source={{uri: "https://www.earlycode.net/_next/image?url=%2Fimages%2Fearlycode_logo.png&w=64&q=75"}}
+                      source={{uri: item.imagePost}}
                       style={{ width: 70, height: 70 }}
                     />
                     <View style={{alignItems: "center", flexDirection: "row"}}>
@@ -135,7 +106,7 @@ function handleSearch(inp) {
                 <Text style={{fontFamily: Theme.fonts.text600, color: Theme.colors.blueMedium}}>{item.jobType}</Text>
                   </View>
                   <View style={{paddingHorizontal: 25, paddingVertical: 5}}>
-                  <Text style={{fontFamily: Theme.fonts.text900, fontSize: 25}}>$200K/Month</Text>
+                  <Text style={{fontFamily: Theme.fonts.text900, fontSize: 25}}>{item.jobType}</Text>
                   </View>
                   <View style={{backgroundColor: "white", padding: 10, borderRadius: 10, marginHorizontal: 20, borderWidth: 1, borderColor: Theme.colors.blueMedium}}>
                     <Text style={{paddingHorizontal: 0, fontFamily: Theme.fonts.text400, color: Theme.colors.blueMedium}} numberOfLines={1}>{item.description}</Text>
@@ -145,7 +116,7 @@ function handleSearch(inp) {
                       <Text style={{fontFamily: Theme.fonts.text600, color: Theme.colors.blueMedium}}>See details</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={{padding: 10, borderWidth: 1, borderRadius: 20, borderColor: Theme.colors.blueMedium, backgroundColor: Theme.colors.blueMedium}}>
-                      <Text style={{fontFamily: Theme.fonts.text600, color: "white"}}>Apply now</Text>
+                      <Text style={{fontFamily: Theme.fonts.text600, color: "white"}} onPress={()=> deleteRequest(item.docID)}>Delete</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -153,28 +124,16 @@ function handleSearch(inp) {
             );
           }}
         ></FlatList>
-      </View>
-    </SafeAreaView>
-  );
+            </View>
+        </SafeAreaView>
+    )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    margin: Platform.OS == "android" ? StatusBar.currentHeight : null,
-    padding: 20,
-  },
-  SearchDesign: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    backgroundColor: "#CCE0F0",
-    paddingHorizontal: 1,
-    borderRadius: 5,
-  },
-  SearchView: {
-    alignSelf: "flex-start",
-    alignItems: "flex-start",
-    width: 350,
-  },
-});
+    container: {
+        flex: 1,
+        margin: Platform.OS == 'android' ? StatusBar.currentHeight : null,
+        padding: 20,
+        justifyContent: 'space-between',
+    },
+})
