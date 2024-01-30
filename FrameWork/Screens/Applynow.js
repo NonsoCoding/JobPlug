@@ -8,8 +8,7 @@ import { db } from "../../Firebase/Settings";
 export function ApplyNow({ navigation, route}) {
 const {userInfo, setPreloader, userUID, docID} = useContext(AppContext);
 
-const {jobTitle, jobLocation, imagePost, description,
-jobType} = route.params;
+const {jobTitle, jobLocation, imagePost, description,jobType} = route.params;
 
 const [address, setAddress] = useState("")
 const [Image, setImage] = useState("")

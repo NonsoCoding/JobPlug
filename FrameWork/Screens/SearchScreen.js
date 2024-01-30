@@ -23,32 +23,6 @@ export function SearchScreen() {
   const [search, setSearch] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // async function getUserPost() {
-  //   const post = await getDoc(doc(db, "Jobs", userUID));
-  //   setJobs(post.data());
-  //   console.log(post.data());
-  // }
-  // async function getUserinfo() {
-  //   const userInfo = await getDoc(doc(db, "users", userUID));
-  //   setUserInfo(userInfo.data());
-  //   console.log(userInfo.data());
-  // }
-  // useEffect(() => {
-  //   // console.log(userUID);
-  //   onSnapshot(collection(db, "Jobs"), (snapshot) => {
-  //     const allData = [];
-  //     snapshot.forEach((Item) => {
-  //       allData.push({ ...Item.data(), docID: Item.id });
-  //       // console.log(Item.data());
-  //     });
-  //     setJobs(allData);
-  //   });
-  //   getUserinfo();
-  //   // getUserPost()
-  // }, []);
-  // const filteredJobs = jobs.filter((job) =>
-  //   job.jobTitle.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
   useEffect(() => {
     setSearchTerm(allJobs)
 }, [])
@@ -112,7 +86,7 @@ function handleSearch(inp) {
                   >
                     <View style={{flexDirection: "row", alignItems: "center"}}>
                     <Image
-                      source={{uri: "https://www.earlycode.net/_next/image?url=%2Fimages%2Fearlycode_logo.png&w=64&q=75"}}
+                      source={{uri: item.imagePost}}
                       style={{ width: 70, height: 70 }}
                     />
                     <View style={{alignItems: "center", flexDirection: "row"}}>

@@ -32,7 +32,9 @@ import {
   doc,
   getDoc,
   onSnapshot,
+  query,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { db } from "../../Firebase/Settings";
 import { PostingScreen } from "./PostingScreen";
@@ -45,7 +47,7 @@ const CarouselLinks = [
 const screenwidth = Dimensions.get("screen").width;
 
 function Home({ navigation }) {
-  const { userUID, setUserInfo, userInfo, setPreloader, setDocID, setAllJobs } = useContext(AppContext);
+  const { userUID, setUserInfo, userInfo, setPreloader, setDocID, setAllJobs, postID } = useContext(AppContext);
   const [jobs, setJobs] = useState([]);
 
   async function getUserinfo() {
@@ -70,7 +72,19 @@ function Home({ navigation }) {
         setAllJobs(allData);
     })
     getUserinfo()
-}, [])
+}, []);
+// useEffect(() => {
+//   const q = collection(db, 'Jobs');
+//     const filter = query(q, where('active', '==', userUID));
+//     onSnapshot(filter, (snapshot) => {
+//         const allData = [];
+//         snapshot.forEach(item => {
+//             allData.push({ ...item.data(), postID: item.id })
+//         })
+//         console.log(allData);
+//         setJobs(allData);
+//     })
+// }, []);
   
 
   
@@ -135,7 +149,7 @@ useEffect(()=> {
               <TouchableOpacity
                 onPress={() => navigation.navigate("Notifications")}
               >
-                <Ionicons name="notifications" size="30" />
+                <Ionicons name="notifications" size={30}/>
               </TouchableOpacity>
             </View>
           </View>
@@ -233,9 +247,9 @@ useEffect(()=> {
             </TouchableOpacity>
           </View>
           {jobs.map(item => {
-
             return (
               <View
+              key={item.docID}
                 style={{
                   padding: 1,
                   paddingVertical: 15,
@@ -295,6 +309,10 @@ useEffect(()=> {
                     <TouchableOpacity style={{padding: 10, borderWidth: 1, borderRadius: 20, borderColor: Theme.colors.blueMedium, backgroundColor: "white"}} 
                     onPress={() => navigation.navigate("See Details", { docID: item.docID })}>
                       <Text style={{fontFamily: Theme.fonts.text600, color: Theme.colors.blueMedium}}>See details</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{padding: 10, borderWidth: 1, borderRadius: 20, borderColor: Theme.colors.blueMedium, 
+                      backgroundColor: Theme.colors.blueMedium}} onPress={()=> {navigation.navigate("Notifications"); setDocID(item.docID)}}>
+                      <Text>applicants</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={{padding: 10, borderWidth: 1, borderRadius: 20, borderColor: Theme.colors.blueMedium, 
                       backgroundColor: Theme.colors.blueMedium}} onPress={() => { navigation.navigate("Apply Now", { jobTitle: item.jobTitle, jobLocation: item.jobLocation

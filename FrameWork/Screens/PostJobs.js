@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { View, SafeAreaView, Text, StatusBar, StyleSheet, Platform, TouchableOpacity, TextInput, useColorScheme, FlatList, Image, Alert } from "react-native";
 import { AppContext } from "./globalVariable";
 import { db } from "../../Firebase/Settings";
-import { collection, deleteDoc, doc, onSnapshot, query, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import { Theme } from "../Components/Theme";
 import Ionicons from "react-native-vector-icons/Ionicons"
 import AntDesign from "react-native-vector-icons/AntDesign"
@@ -27,6 +27,7 @@ export function PostedJobs() {
           })
       }, []);
 
+      
       const deleteRequest = (postID) => {
         const docRef = doc(db, "Jobs", postID);
         setPreloader(true);
@@ -34,17 +35,32 @@ export function PostedJobs() {
         .then(()=> {
             setPreloader(false)
             Alert.alert(
+              "Delete Status",
+              "You have deleted this Item successfully"
+              )
+            }).catch(()=> {
+              setPreloader(false)
+              Alert.alert(
                 "Delete Status",
                 "You have deleted this Item successfully"
-            )
-        }).catch(()=> {
-            setPreloader(false)
-            Alert.alert(
-                "Delete Status",
-                "You have deleted this Item successfully"
-            )
-        })
-      }
+                )
+              })
+            }
+            function handleActive() {
+              updateDoc(doc(db, "users", userUID), {
+                status: "inactive"
+              }).then(()=> {
+                Alert.alert(
+                    "status",
+                    "hidden successfully"
+                )
+            }).catch(()=> {
+                Alert.alert(
+                  "status",
+                  "hidden unsuccessfully"
+                )
+            })
+            }
 
     return (
         <SafeAreaView style={{flex: 1}}>
@@ -114,6 +130,10 @@ export function PostedJobs() {
                   <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, marginVertical: 10}}>
                     <TouchableOpacity style={{padding: 10, borderWidth: 1, borderRadius: 20, borderColor: Theme.colors.blueMedium, backgroundColor: "white"}}>
                       <Text style={{fontFamily: Theme.fonts.text600, color: Theme.colors.blueMedium}}>See details</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{padding: 10, borderWidth: 1, borderRadius: 20, borderColor: 
+                      Theme.colors.blueMedium, backgroundColor: Theme.colors.blueMedium}} onPress={handleActive}>
+                      <Text>Hide</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={{padding: 10, borderWidth: 1, borderRadius: 20, borderColor: Theme.colors.blueMedium, backgroundColor: Theme.colors.blueMedium}}>
                       <Text style={{fontFamily: Theme.fonts.text600, color: "white"}} onPress={()=> deleteRequest(item.postID)}>Delete</Text>
